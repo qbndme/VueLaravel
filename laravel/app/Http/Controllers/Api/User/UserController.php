@@ -3,22 +3,42 @@
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
-use App\Model\User;
+use App\Models\AdminUser;
+use DB;
 
 class UserController extends Controller
 {
+    public function logout()
+    {
+        self::successResponse('success');
+    }
+
     public function info()
     {
-        $users = User::find(1)->toArray();
+        if (!request()->filled('token')) {
+            self::failResponse(50008, 'Login failed, param error.');
+        }
+
+        $token = request()->input('token');
+
+        $info = AdminUser::select('name', 'avatar', 'role_id')->where('remember_token', $token)->first();
+        if (!isset($info)) {
+            self::failResponse(50008, 'Login failed, Login failed, unable to get user details.');
+        }
+       
+        // DB::enableQueryLog();
+        $roles = AdminUser::find($info['role_id'])->adminRole;
+        // dump(DB::getQueryLog());
+       
+        $roles = $roles ? $roles->toArray() : [ 'name' => 'new', 'introduction'=>'I new one'];
+
         $data = [
-            'code' => 20000,
-            'data' => [
-                'roles' => ['admin', 'editor'],
-                'introduction' => 'I am a super administrator',
-                'avatar' => 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-                'name' => 'Super Admin',
-            ],
+            'name' => $info['name'],
+            'avatar' => $info['avatar'],
+            'introduction' => $roles['introduction'],
+            'roles' => [$roles['name']],
         ];
-        return response()->json($data);
+
+        self::successResponse($data);
     }
 }

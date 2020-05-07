@@ -1,42 +1,55 @@
 'use strict'
-const path = require('path') //引入 path 模块
+const path = require('path')
 const defaultSettings = require('./src/settings.js')
 
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-const name = defaultSettings.title || 'vue Admin Template' // page title
-const port = process.env.port || process.env.npm_config_port || 9528 // dev port
+const name = defaultSettings.title || 'vue Element Admin' // page title
+
+// If your port is set to 80,
+// use administrator privileges to execute the command line.
+// For example, Mac: sudo npm run
+// You can change the port by the following method:
+// port = 9527 npm run dev OR npm run dev --port = 9527
+const port = process.env.port || process.env.npm_config_port || 9527 // dev port
 
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
+  /**
+   * You will need to set publicPath if you plan to deploy your site under a sub path,
+   * for example GitHub Pages. If you plan to deploy your site to https://foo.github.io/bar/,
+   * then publicPath should be set to "/bar/".
+   * In most cases please use '/' !!!
+   * Detail: https://cli.vuejs.org/config/#publicpath
+   */
   publicPath: '/',
   outputDir: 'dist',
   assetsDir: 'static',
-  lintOnSave: process.env.NODE_ENV === 'development', //在开发构建时使用 eslint-loader
-  productionSourceMap: process.env.NODE_ENV === 'development', //开发环境需要source map
+  lintOnSave: process.env.NODE_ENV === 'development',
+  productionSourceMap: false,
   devServer: {
     port: port,
     proxy: {
       '/api': {
         target: process.env.VUE_APP_BASE_API,
         changeOrigin: true,
-        pathRewrite: {
-          '/api': ''
-        }
+        // pathRewrite: {
+        //   '/api': ''
+        // }
       }
     },
-    open: true, //在服务器启动后打开浏览器
+    open: true,
     overlay: {
       warnings: false,
       errors: true
     },
-    // before: require('./mock/mock-server.js') //mock数据加载  
+    // before: require('./mock/mock-server.js')
   },
   configureWebpack: {
-    //在webpack的名称字段中提供应用程序的标题，以便
-    //可以在index.html中对其进行访问以注入正确的标题。
+    // provide the app's title in webpack's name field, so that
+    // it can be accessed in index.html to inject the correct title.
     name: name,
     resolve: {
       alias: {
@@ -45,8 +58,8 @@ module.exports = {
     }
   },
   chainWebpack(config) {
-    config.plugins.delete('preload') // 删除preload
-    config.plugins.delete('prefetch') // 删除prefetch
+    config.plugins.delete('preload') // TODO: need test
+    config.plugins.delete('prefetch') // TODO: need test
 
     // set svg-sprite-loader
     config.module
@@ -89,7 +102,7 @@ module.exports = {
             .plugin('ScriptExtHtmlWebpackPlugin')
             .after('html')
             .use('script-ext-html-webpack-plugin', [{
-              // `runtime` must same as runtimeChunk name. default is `runtime`
+            // `runtime` must same as runtimeChunk name. default is `runtime`
               inline: /runtime\..*\.js$/
             }])
             .end()

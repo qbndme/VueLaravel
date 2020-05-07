@@ -5,8 +5,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-// Route::match(['get', 'post'], '/user/login', 'Api\User\LoginController');
-Route::match(['get', 'post'], '/user/info', 'Api\User\UserController@info');
 
 //学习
 
@@ -33,7 +31,8 @@ Route::match(['get', 'post'], '/user/info', 'Api\User\UserController@info');
 // });
 
 //控制器结合
-Route::any('/user/login', [
-    'uses' => 'Api\User\LoginController',
-    'as' => 'userLogin',
-]);
+// Route::any('/user/login', [
+//     'uses' => 'Api\User\UserController@login',
+//     'as' => 'userLogin',
+// ]);
+
